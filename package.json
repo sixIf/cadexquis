@@ -1,0 +1,28 @@
+{
+  "name": "cadexquis",
+  "version": "1.0.0",
+  "description": "Discord bot implementing the \"cadavre exquis\" word game",
+  "main": "src/main.ts",
+  "scripts": {
+    "serve": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/groCervo/cadexquis.git"
+  },
+  "author": "groCervo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/groCervo/cadexquis/issues"
+  },
+  "homepage": "https://github.com/groCervo/cadexquis#readme",
+  "dependencies": {
+    "@types/node": "^14.14.7",
+    "discord.js": "^12.4.1",
+    "eslint": "^7.13.0",
+    "nodemon": "^2.0.6",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.5"
+  }
+}
