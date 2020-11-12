@@ -1,7 +1,7 @@
 import { prefix, token } from "./config/config.json"
 import Discord from "discord.js"
 import fs from 'fs'
-import { DiscordCommand } from './config/literals/command'
+import { DiscordCommand, defaultCooldown } from './config/literals/command'
 
 
 const client = new Discord.Client();
@@ -55,7 +55,7 @@ client.on('message', msg => {
 
     const now = Date.now();
     const timestamps = cooldowns.get(command.name);
-    const cooldownAmount = (command.cooldown || 3) * 1000;
+    const cooldownAmount = (command.cooldown || defaultCooldown) * 1000;
     
     if (timestamps.has(msg.author.id)){
         const expirationTime = timestamps.get(msg.author.id) + cooldownAmount;

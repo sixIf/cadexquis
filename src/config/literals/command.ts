@@ -10,3 +10,5 @@ export interface DiscordCommand extends NodeModule {
     description: string;
     execute(msg: Discord.Message, args: Array<any>): void;
 }
+
+export const defaultCooldown = 3;

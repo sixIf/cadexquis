@@ -1,6 +1,7 @@
 import { prefix } from "../config/config.json"
 import Discord from "discord.js"
 import commands from "../main"
+import { defaultCooldown } from "../config/literals/command";
 
 module.exports = {
     name: 'help',
@@ -40,7 +41,7 @@ module.exports = {
             if (command.description) data.push(`**Description:** ${command.description}`);
             if (command.usage) data.push(`**Usage:** ${prefix}${command.name} ${command.usage}`);
             
-            data.push(`**Cooldown:** ${command.cooldown || 3} second(s)`);
+            data.push(`**Cooldown:** ${command.cooldown || defaultCooldown} second(s)`);
             
             msg.channel.send(data, { split: true });
         }
