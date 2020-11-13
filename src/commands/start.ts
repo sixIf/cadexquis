@@ -6,7 +6,7 @@ import { Game } from "../config/literals/game"
 module.exports = {
 	name: 'start',
 	description: 'Create a game',
-	args: false,
+    args: false,
 	guildOnly: true,
 	aliases: ['go'],
 	execute(msg: Discord.Message, args: Array<string>) {

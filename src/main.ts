@@ -2,6 +2,7 @@ import { prefix, token } from "./config/config.json"
 import Discord from "discord.js"
 import fs from 'fs'
 import { DiscordCommand, defaultCooldown } from './config/literals/command'
+import { Game } from "./config/literals/game";
 
 
 const client = new Discord.Client();
@@ -67,6 +68,13 @@ client.on('message', msg => {
     } else {
         timestamps.set(msg.author.id, now);
         setTimeout(() => timestamps.delete(msg.author.id), cooldownAmount);
+    }
+    
+    // Find game
+    let game: Game;
+    if (command.needGame) {
+        game = Game.activeGames.find(game => game.id == args[0]);
+        if (!game) return msg.reply(`We didn't find this game.`);
     }
 
     try {

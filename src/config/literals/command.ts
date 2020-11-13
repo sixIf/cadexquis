@@ -4,6 +4,7 @@ export interface DiscordCommand extends NodeModule {
     name: string;
     args?: boolean;
     aliases?: Array<string>;
+    needGame?: boolean;
     usage?: string;
     guildOnly?: string;
     cooldown: number;
