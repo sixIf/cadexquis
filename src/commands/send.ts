@@ -5,20 +5,14 @@ import { Game } from "../config/literals/game"
 
 module.exports = {
 	name: 'send',
-	description: 'Create a game',
+	description: 'Send your text to next user. Hide the text by putting it between \'||\' symbol.',
     args: true,
+    usage: '[GAMEID] [|| Text to hide ||] [text to show]',
     needGame: true,
 	guildOnly: false,
 	aliases: ['go'],
 	execute(msg: Discord.Message, args: Array<string>) {
         const game = Game.activeGames.find(game => game.id == args.shift());
-        // Validate arguments ?
-        const text = args.join(' ');
-        const isSpoilerPresent = (text.indexOf('||') != -1) && (text.lastIndexOf('||') != -1);
-        const isDoubleSpoiler = text.indexOf('||') != text.lastIndexOf('||');
-        if (isSpoilerPresent && isDoubleSpoiler)
-            game.send(msg, text.slice(text.lastIndexOf('||')));            
-        else
-            msg.reply('You forgot to hide a part of your text. Encapsulate with the symbol \'||\' at the beginning and end.')
+        game.send(msg);            
 	},
 };

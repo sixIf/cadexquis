@@ -5,6 +5,7 @@ module.exports = {
 	name: 'stop',
     description: 'Stop the game.',
     args: true,
+    usage: '[GAMEID]',
     needGame: true,
 	guildOnly: false,
 	aliases: ['go'],

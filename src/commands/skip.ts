@@ -5,6 +5,7 @@ module.exports = {
 	name: 'skip',
     description: 'Skip sleeping player\'s turn.',
     args: true,
+    usage: '[GAMEID]',
     needGame: true,
 	guildOnly: false,
 	aliases: ['go'],
