@@ -22,7 +22,7 @@ export class CadavreExquis extends Game {
                     channel.send(lastEntry);
                 else if (this.story.size > 0) channel.send(`Here is how ${msg.author} ended his part: ` + this.getHint(msg));
                 else channel.send(created);
-                channel.send(`Use this command to continue the story: \n?send ${this.id} ||Your story to hide|| with a visible end`);
+                channel.send(`Use this command to continue the story: \n\`?send ${this.id} ||Your story to hide that next player won't see|| and some words to let him continue\``);
             })
             .catch((err: Error) => {
                 console.error(err);
