@@ -1,7 +1,7 @@
 import Discord from "discord.js"
 import { defaultPlayer, defaultRound } from "../config/literals/command";
 import { start, created } from "../config/tips.json"
-import { Game } from "../config/literals/game"
+import { Game } from "../classes/game"
 
 module.exports = {
 	name: 'send',

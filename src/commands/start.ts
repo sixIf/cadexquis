@@ -1,7 +1,7 @@
 import Discord from "discord.js"
 import { defaultPlayer } from "../config/literals/command";
 import { start } from "../config/tips.json"
-import { Game } from "../config/literals/game"
+import { CadavreExquis } from "../classes/cadavreExquis"
 
 module.exports = {
 	name: 'start',
@@ -32,7 +32,7 @@ module.exports = {
                     const reaction = collected.first();
                     const participants = reaction.users.cache.mapValues(user => user).filter((user) => !user.bot);
                     if (!participants.get(msg.author.id)) participants.set(msg.author.id, msg.author);
-                    const game = new Game(msg.author, [...participants.values()], msg, roundNb);
+                    const game = new CadavreExquis(msg.author, [...participants.values()], msg, roundNb);
                     participants.each(user => console.log(`${user.username}`))
                     game.start();
                 })
@@ -51,7 +51,7 @@ module.exports = {
                         
                         if (participants.size == 1) botMsg.reply(`You can't play alone ${participants.first().username}, go get some friends first.`)
                         else {
-                            const game = new Game(msg.author, [...participants.values()], msg, roundNb);
+                            const game = new CadavreExquis(msg.author, [...participants.values()], msg, roundNb);
                             game.start();
                         }
                     });

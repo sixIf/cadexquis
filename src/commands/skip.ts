@@ -1,5 +1,5 @@
 import Discord from "discord.js"
-import { Game } from "../config/literals/game"
+import { Game } from "../classes/game"
 
 module.exports = {
 	name: 'skip',

@@ -2,7 +2,7 @@ import { prefix, token } from "./config/config.json"
 import Discord from "discord.js"
 import fs from 'fs'
 import { DiscordCommand, defaultCooldown } from './config/literals/command'
-import { Game } from "./config/literals/game";
+import { Game, IGame } from "./classes/game";
 
 
 const client = new Discord.Client();
