@@ -4,11 +4,10 @@ import { Game } from "../classes/game"
 module.exports = {
 	name: 'stop',
     description: 'Stop the game.',
-    args: true,
-    usage: '[GAMEID]',
+    args: false,
     needGame: true,
 	guildOnly: false,
-	aliases: ['go'],
+	aliases: ['done'],
 	execute(msg: Discord.Message, args: Array<string>) {
         const game = Game.activeGames.find(game => game.id == args.shift());
         if (msg.author.id == game.author.id) game.stop();

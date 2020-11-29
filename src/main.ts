@@ -73,8 +73,9 @@ client.on('message', msg => {
     // Find game
     let game: Game;
     if (command.needGame) {
-        game = Game.activeGames.find(game => game.id == args[0]);
+        game = Game.activeGames.find(game => game.isUserInGame(msg.author.id));
         if (!game) return msg.reply(`We didn't find this game.`);
+        else args[0] = game.id;
     }
 
     try {

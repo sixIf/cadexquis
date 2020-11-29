@@ -28,6 +28,15 @@ export abstract class Game implements IGame {
         Game.activeGames.push(this);
     }
 
+    static isUserInActiveGames(userId: string): boolean {
+        for(let i = 0; i < Game.activeGames.length; i++){
+            if (Game.activeGames[i].isUserInGame(userId)) return true;
+        }
+        console.log('nb active games ' + Game.activeGames.length)
+        console.log('userToTest: ' + userId)
+        return false;
+    }
+
     private generateId() {
         const availableChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         const charLength = availableChars.length - 1;
@@ -47,6 +56,10 @@ export abstract class Game implements IGame {
             this.recap();
             Game.activeGames.splice(gameIndex);
         }
+    }
+
+    isUserInGame(userId: string): boolean {
+        return this.participants.findIndex(user => user.id == userId) != -1;
     }
 
     /**

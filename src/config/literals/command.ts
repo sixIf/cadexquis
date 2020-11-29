@@ -15,3 +15,4 @@ export interface DiscordCommand extends NodeModule {
 export const defaultCooldown = 3;
 export const defaultPlayer = 3;
 export const defaultRound = 3;
+export const visibleWords = 3;
