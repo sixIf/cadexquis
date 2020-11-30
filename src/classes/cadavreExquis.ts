@@ -1,5 +1,5 @@
 import { Game } from "./game"
-import Discord, { Message } from "discord.js"
+import Discord from "discord.js"
 import { visibleWords } from "../config/literals/command"
 import { created, lastEntry } from "../config/tips.json"
 import { spoiler, prefix } from "../config/config.json"

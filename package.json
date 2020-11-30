@@ -5,6 +5,7 @@
   "main": "src/main.ts",
   "scripts": {
     "serve": "nodemon",
+    "build": "rimraf dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,6 +23,7 @@
     "discord.js": "^12.4.1",
     "eslint": "^7.13.0",
     "nodemon": "^2.0.6",
+    "rimraf": "^2.6.3",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5"
   }
