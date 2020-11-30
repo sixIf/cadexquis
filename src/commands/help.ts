@@ -1,7 +1,7 @@
 import { prefix } from "../config/config.json"
 import Discord from "discord.js"
-import commands from "../main"
 import { defaultCooldown } from "../config/literals/command";
+import { Bot } from "../bot/bot";
 
 module.exports = {
     name: 'help',
@@ -11,6 +11,8 @@ module.exports = {
 	cooldown: 2,
 	execute(msg: Discord.Message, args: Array<string>) {
 		const data = [];
+
+        const commands = Bot.commands;
 
         if (!args.length) {
             data.push('Here\'s a list of all my commands:');
