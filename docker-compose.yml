@@ -6,3 +6,7 @@ services:
       context: .
     restart: unless-stopped
     network_mode: 'host'
+    volumes: 
+      - .:/usr/src/cadexquis
+    command: >
+      npm run serve
