@@ -22,6 +22,13 @@ export class Bot {
         this.client.login(this.token);
     }
 
+    static get embedMsg(){
+        return new Discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setAuthor('Cadavre Exquis', 'https://upload.wikimedia.org/wikipedia/commons/8/85/Exquisite_Corpses_example.jpg', 'http://cadexquis.site/')
+        .setThumbnail('https://upload.wikimedia.org/wikipedia/commons/8/85/Exquisite_Corpses_example.jpg');
+    }
+
     private _init() {
         this._onClientReady();
         this._onClientMessage();

@@ -17,6 +17,7 @@ export abstract class Game implements IGame {
     private _round: number;
     private _story: Discord.Collection<Discord.Message, Discord.User>;
     static activeGames: Array<Game> = [];
+    private _done: boolean;
 
     constructor(author: Discord.User, participants: Array<Discord.User>, msgOrigin: Discord.Message, round: number){
         this._id = this.generateId();
@@ -25,6 +26,7 @@ export abstract class Game implements IGame {
         this._participants = participants;
         this._round = round;
         this._story = new Discord.Collection<Discord.Message, Discord.User>();
+        this._done = false;
         Game.activeGames.push(this);
     }
 
@@ -107,6 +109,14 @@ export abstract class Game implements IGame {
     
     get story() {
         return this._story;
+    }
+    
+    get done() {
+        return this._done;
+    }
+
+    set done(value: boolean){
+        this._done = value;
     }
 
 }

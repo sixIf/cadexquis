@@ -4,8 +4,8 @@
   "description": "Discord bot implementing the \"cadavre exquis\" word game",
   "main": "src/main.ts",
   "scripts": {
-    "serve": "nodemon",
-    "build": "rimraf dist && tsc",
+    "serve": "cross-env NODE_ENV=development nodemon -L",
+    "build": "cross-env NODE_ENV=production rimraf dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,8 +19,11 @@
   },
   "homepage": "https://github.com/groCervo/cadexquis#readme",
   "dependencies": {
+    "cross-env": "^7.0.2",
+    "discord.js": "^12.4.1"
+  },
+  "devDependencies": {
     "@types/node": "^14.14.7",
-    "discord.js": "^12.4.1",
     "eslint": "^7.13.0",
     "nodemon": "^2.0.6",
     "rimraf": "^2.6.3",

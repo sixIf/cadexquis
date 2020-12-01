@@ -1,8 +1,9 @@
 import { Game } from "./game"
 import Discord from "discord.js"
-import { visibleWords } from "../config/literals/command"
+import { sendStoryWaitTime, visibleWords } from "../config/literals/command"
 import { created, lastEntry } from "../config/tips.json"
 import { spoiler, prefix } from "../config/config.json"
+import { Bot } from "../bot/bot"
 
 
 export class CadavreExquis extends Game {
@@ -12,32 +13,41 @@ export class CadavreExquis extends Game {
     }
     
     start(): void {
-        this.msgOrigin.channel.send(`The brave are : \n${this.participantsName}`);
-        this.msgOrigin.channel.send(`let the game begin, ${this.participants[0]} you go first, check your DMs`);
         this.askToPlay(this.participants[0]);
     }
 
     askToPlay(user: Discord.User, msg?: Discord.Message): void { 
-        let botMsg = ''.concat('\n', `\`Your phrase will be sent to the next participant with only the last ${visibleWords} word visible.\``,
-                                '\n', `\`Pro tip: you can choose what to hide by putting the text this way: ||Hidden text||\``,
-                                '\n', this.story.size > 0 ? `Here is how ${msg.author} ended his part: **` + this.getHint(msg) + '**' : created,
+        let botMsg = ''.concat('\n', `Your phrase will be sent to the next participant with only the last ${visibleWords} word visible.`,
+                                '\n\n', `\`Pro tip: you can choose what to hide by putting the text this way: ||This story is hidden|| and this part is not\``,
+                                '\n\n', this.story.size > 0 ? `Here is how ${msg.author} ended his part: **` + this.getHint(msg) + '**' : created,
                                 this.remainingMsgNb == 1 ? `\n` + lastEntry: '');
 
+        const embedMsg = Bot.embedMsg.setTitle('It\'s your turn !')
+            .setDescription(botMsg);
         user.createDM()
             .then((channel: Discord.DMChannel) => {
-                const filter = (response: Discord.Message, sender: Discord.User) => {
-                    return !response.content.startsWith(prefix) || !sender.bot;
+                const filter = (response: Discord.Message) => {
+                    const msgIsValid = !response.content.startsWith(prefix) && !response.author.bot;
+                    const msgIsTooShort = response.content.trim().split(' ').length < (visibleWords + 2);
+                    if(!msgIsValid) return false;
+                    else if (msgIsTooShort) {
+                        response.reply(`Don\'t be so shy, write a least ${visibleWords} words.`)
+                        return false;
+                    } 
+                    else return true;
                 }
 
-                channel.send(botMsg).then(() => {
-                    channel.awaitMessages(filter, { max: 1, time: 60000, errors: ['time']})
+                channel.send(embedMsg).then(() => {
+                    channel.awaitMessages(filter, { max: 1, time: sendStoryWaitTime, errors: ['time']})
                         .then(collected => {
                             const userMsg = collected.first();
                             this.send(userMsg);
                         })
                         .catch(collected => {
-                            channel.send('You are sleeping, we skipped your turn !');
-                            this.skip();
+                            if(!this.done) {
+                                channel.send('You are sleeping, we skipped your turn !');
+                                this.skip();
+                            };
                         })
                 })
             })
@@ -50,25 +60,20 @@ export class CadavreExquis extends Game {
     
     send(msg: Discord.Message) {
         const msgContent = msg.content;
-        const isSpoilerPresent = (msgContent.indexOf(spoiler) != -1) && (msgContent.lastIndexOf(spoiler) != -1);
-        const isDoubleSpoiler = msgContent.indexOf(spoiler) != msgContent.lastIndexOf(spoiler);
+        const splitSpoilerMsg = msgContent.split('||');
 
-        if (!isSpoilerPresent || !isDoubleSpoiler){
-            // Set automatically the spoilers
-            let msgArray = msgContent.split(' ');
-            let hintIndex = 0;
-            if (msgArray.length > 5) hintIndex = msgArray.length - visibleWords - 1;
-            else hintIndex = msgArray.length - 2; // Only one word ? :'(
-
-            const hiddenMsg = msgArray.slice(0, hintIndex);
-            const visibleMsg = msgArray.slice(hintIndex);
-            msg.content = '||' + hiddenMsg.join(' ') + '||' + visibleMsg.join(' ');
-        }
-
-        const nextParticipant = this.getNextParticipant();
+        // Spoilers are missing
+        if (splitSpoilerMsg.length < 3) {
+            const splitSpaceMsg = msg.content.trim().split(' ');
+            const hintIndex = msg.content.indexOf(splitSpaceMsg[splitSpaceMsg.length-3]);
+            msg.content = '||' + msg.content.slice(0, hintIndex) + '|| ' + msg.content.slice(hintIndex);
+        };
+        
         this.story.set(msg, msg.author);
-        if (this.remainingMsgNb == 0) this.stop();
+        
+        if (this.remainingMsgNb == 0) return this.stop();
         else {
+            const nextParticipant = this.getNextParticipant();
             msg.reply(`Here is the hint ${nextParticipant.username} will receive: ${this.getHint(msg)}`);            
             this.askToPlay(nextParticipant, msg);
         }
@@ -84,6 +89,7 @@ export class CadavreExquis extends Game {
     }
 
     stop() {
+        this.done = true;
         const gameIndex = Game.activeGames.findIndex(game => game.id == this.id);
         if (gameIndex != -1) {
             this.recap();
@@ -92,12 +98,14 @@ export class CadavreExquis extends Game {
     }
 
     recap() {
-        const reduceParticipants = (authors: string, author: Discord.User) => `${authors + ', ' + author.username}`;
+        const reduceParticipants = (authors: string, author: Discord.User, index: number, array: Array<Discord.User>) => `${authors + author.username.concat(index != array.length-1 ? ', ' : '')}`;
         const reduceStory = (story: string, user: Discord.User, msg: Discord.Message ) => `${story + '\n' + this.getFullText(msg)}`;
         const formattedStory = this.story.reduce(reduceStory, '');
         if (formattedStory.length > 0){
-            this.msgOrigin.channel.send(`Here is your masterpiece ${this.participants.reduce(reduceParticipants, '')} :\n`);
-            this.msgOrigin.channel.send(this.story.reduce(reduceStory, ''));
+            const embedMsg = Bot.embedMsg.setTitle('Here is your masterpiece')
+                .setDescription(formattedStory)
+                .addField('Players', this.participants.reduce(reduceParticipants, ''));
+            this.msgOrigin.channel.send(embedMsg);
         }
     }
     
