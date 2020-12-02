@@ -1,14 +1,16 @@
 import Discord from "discord.js"
-import { defaultCooldown, DiscordCommand } from "../config/literals/command";
+import { defaultCooldown, DiscordCommand } from "../config/literals/discordCommand";
 import { Game } from "../classes/game";
+import { logger } from "../utils/logger";
+import commands from "../utils/commands";
 
 
 export class Bot {
     client: Discord.Client;
     prefix: string;
     token: string;
-    static commandFiles: string[];
-    static commands: Discord.Collection<string, DiscordCommand> = new Discord.Collection();
+    static commands = commands;
+    static logger = logger;
     cooldowns: Discord.Collection<string, Discord.Collection<string, number>> = new Discord.Collection();
 
     constructor(prefix: string, token: string){
@@ -36,7 +38,10 @@ export class Bot {
 
     private _onClientReady() {
         this.client.on('ready', () => {
-            console.log(`Logged in as ${this.client.user.tag}`);
+            logger.log({
+                level: 'info',
+                message: `Logged in as ${this.client.user.tag}`
+            });
         })
     }
 
@@ -92,14 +97,18 @@ export class Bot {
             let game: Game;
             if (command.needGame) {
                 game = Game.activeGames.find(game => game.isUserInGame(msg.author.id));
-                if (!game) return msg.reply(`We didn't find this game.`);
+                if (!game) return;
                 else args[0] = game.id;
             }
         
             try {
                 command.execute(msg, args);
             } catch (error) {
-                console.error(error);
+                logger.log({
+                    level: 'error',
+                    message: `Error trying to execute ${commandName}`,  
+
+                });
                 msg.reply('There was an error trying to execute that command!');
             }    
         })

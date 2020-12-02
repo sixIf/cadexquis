@@ -1,6 +1,6 @@
 import { prefix } from "../config/config.json"
 import Discord from "discord.js"
-import { defaultCooldown } from "../config/literals/command";
+import { defaultCooldown } from "../config/literals/discordCommand";
 import { Bot } from "../bot/bot";
 import { description } from "../config/tips.json"
 

@@ -3,7 +3,7 @@ import { startEmoji, joinEmoji } from "../config/tips.json"
 import { CadavreExquis } from "../classes/cadavreExquis"
 import { Game } from "../classes/game";
 import { Bot } from "../bot/bot";
-import { defaultRound, joinWaitTime } from "../config/literals/command";
+import { defaultRound, joinWaitTime } from "../config/literals/discordCommand";
 
 module.exports = {
 	name: 'start',

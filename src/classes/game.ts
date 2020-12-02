@@ -8,6 +8,11 @@ export interface IGame {
     recap(): void;
 }
 
+export interface StoryMessage {
+    msg: Discord.Message;
+    hint: string;
+}
+
 
 export abstract class Game implements IGame {
     private _id: string;
@@ -15,7 +20,7 @@ export abstract class Game implements IGame {
     private _author: Discord.User;
     private _participants: Array<Discord.User>;
     private _round: number;
-    private _story: Discord.Collection<Discord.Message, Discord.User>;
+    private _story: Discord.Collection<StoryMessage, Discord.User>;
     static activeGames: Array<Game> = [];
     private _done: boolean;
 
@@ -25,7 +30,7 @@ export abstract class Game implements IGame {
         this._msgOrigin = msgOrigin;
         this._participants = participants;
         this._round = round;
-        this._story = new Discord.Collection<Discord.Message, Discord.User>();
+        this._story = new Discord.Collection<StoryMessage, Discord.User>();
         this._done = false;
         Game.activeGames.push(this);
     }
@@ -76,7 +81,7 @@ export abstract class Game implements IGame {
     
     abstract recap(): void;
 
-    abstract askToPlay(user: Discord.User, msg?: Discord.Message): void;
+    abstract askToPlay(user: Discord.User, storyMsg?: StoryMessage): void;
 
     /**
      * Getters
