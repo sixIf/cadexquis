@@ -39,8 +39,6 @@ export abstract class Game implements IGame {
         for(let i = 0; i < Game.activeGames.length; i++){
             if (Game.activeGames[i].isUserInGame(userId)) return true;
         }
-        console.log('nb active games ' + Game.activeGames.length)
-        console.log('userToTest: ' + userId)
         return false;
     }
 

@@ -1,4 +1,4 @@
-import Discord from "discord.js"
+import Discord, { User } from "discord.js"
 import { startEmoji, joinEmoji } from "../config/tips.json"
 import { CadavreExquis } from "../classes/cadavreExquis"
 import { Game } from "../classes/game";
@@ -28,13 +28,8 @@ module.exports = {
                 .then()
                 .catch(console.error);                
             }, 1000);
-
             // Await reaction to subscribe user
-            const filter = (reaction: Discord.MessageReaction, user: Discord.User) => {
-                console.log(reaction.emoji.name + 'par luser' + user.username)
-                console.log(( reaction.emoji.name === startEmoji
-                    || reaction.emoji.name === joinEmoji )
-                    && !user.bot)
+            const filter = async (reaction: Discord.MessageReaction, user: Discord.User) => {
                 return ( reaction.emoji.name === startEmoji
                     || reaction.emoji.name === joinEmoji )
                     && !user.bot;
@@ -47,8 +42,9 @@ module.exports = {
             
             // Bug when using same IP: https://github.com/discordjs/discord.js/issues/4947#issuecomment-718487783
             // So in development use 2 different devices
-            collector.on('collect', (reaction, user) => {
-                if(reaction.emoji.name === startEmoji && user.id == msg.author.id) {
+            collector.on('collect', async (reaction, user) => {
+                if (emojiStartReceived) return;
+                else if (reaction.emoji.name === startEmoji && user.id == msg.author.id) {
                     emojiStartReceived = true;
                     startGame(participants, msg);
                 } else {
@@ -63,16 +59,14 @@ module.exports = {
 
         function startGame(participants: Discord.Collection<string, Discord.User>, startMsg: Discord.Message){
             const allowedParticipants = participants.mapValues(user => user).filter((user) => !Game.isUserInActiveGames(user.id));
-            participants.forEach((user) => console.log(`PArticipants ${user.username}`))
-            allowedParticipants.forEach((user) => console.log(`Allowed ${user.username}`))
             if(allowedParticipants.size < 2) return startMsg.reply(`You can't play alone, go get some friends first.`);
             const game = new CadavreExquis(startMsg.author, [...allowedParticipants.values()], startMsg, roundNb);
             const startedMsg = Bot.embedMsg.setTitle('So the game begins')
-                .setDescription(game.participantsName.concat(' ', 
-                    'are in.', 
-                    participants.size != allowedParticipants.size ? 'If you are not in, that mean you are currently in an active game' : '',
-                    '\n', `${game.participants[0]} you go first, check your DMs`)
-                );
+            .setDescription(game.participantsName.concat(' ', 
+            'are in.', 
+            participants.size != allowedParticipants.size ? 'If you are not in, that mean you are currently in an active game' : '',
+            '\n', `${game.participants[0]} you go first, check your DMs`)
+            );
             startMsg.channel.send(startedMsg);
             game.start();
         }

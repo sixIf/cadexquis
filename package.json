@@ -21,7 +21,7 @@
   "dependencies": {
     "@types/winston": "^2.4.4",
     "cross-env": "^7.0.2",
-    "discord.js": "^12.4.1",
+    "discord.js": "^12.5.1",
     "winston": "^3.3.3"
   },
   "devDependencies": {
