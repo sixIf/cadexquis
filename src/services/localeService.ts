@@ -1,5 +1,5 @@
-import { inject, injectable } from "tsyringe";
-import { ILocaleClient } from "../api/localeClient";
+import { injectable } from "tsyringe";
+import i18n from '../utils/i18n'
 
 export interface ILocaleService {
   getCurrentLocale(): string;
@@ -21,23 +21,23 @@ interface phraseInfo {
 export class LocaleService implements ILocaleService {
     /**
      *
-     * @param localeClient The i18n provider
+     * @param i18nProvider The i18n provider
      */
-    constructor(@inject("ILocaleClient") private localeClient: ILocaleClient) { }
+    private i18nProvider = i18n;
 
     /**
      *
      * @returns {string} The current locale code
      */
     getCurrentLocale(): string {
-      return this.localeClient.getCurrentLocale();
+      return this.i18nProvider.getLocale();
     }
     /**
      *
      * @returns string[] The list of available locale codes
      */
     getLocales(): Array<string> {
-      return this.localeClient.getLocales();
+      return this.i18nProvider.getLocales();
     }
     /**
      *
@@ -45,7 +45,7 @@ export class LocaleService implements ILocaleService {
      */
     setLocale(locale: string): void {
       if (this.getLocales().indexOf(locale) !== -1) {
-        this.localeClient.setLocale(locale)
+        this.i18nProvider.setLocale(locale)
       }
     }
     /**
@@ -55,7 +55,7 @@ export class LocaleService implements ILocaleService {
      * @returns {string} Translated string
      */
     translate(phrase: string|phraseInfo, args = undefined): string {
-      return this.localeClient.translate(phrase, args)
+      return this.i18nProvider.__(phrase, args)
     }
     /**
      *
@@ -64,6 +64,6 @@ export class LocaleService implements ILocaleService {
      * @returns {string} Translated string
      */
     translatePlurals(phrase: string, count: number): string {
-      return this.localeClient.translatePlurals(phrase, count)
+      return this.i18nProvider.__n(phrase, count)
     }
   }
