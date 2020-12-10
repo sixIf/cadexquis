@@ -1,4 +1,7 @@
 import Discord from "discord.js"
+import { ApplicationContainer } from "../di";
+import { LocaleService } from "../services/localeService";
+import { logger } from "../utils/logger";
 
 export interface IGame {
     start(): void;
@@ -6,6 +9,7 @@ export interface IGame {
     send(msg: Discord.Message): void;
     skip(): void;
     recap(): void;
+    isUserInGame(userId: string): boolean;
 }
 
 export interface StoryMessage {
@@ -23,8 +27,10 @@ export abstract class Game implements IGame {
     private _story: Discord.Collection<StoryMessage, Discord.User>;
     static activeGames: Array<Game> = [];
     private _done: boolean;
+    private _locale: string;
+    localeService = ApplicationContainer.resolve(LocaleService);
 
-    constructor(author: Discord.User, participants: Array<Discord.User>, msgOrigin: Discord.Message, round: number){
+    constructor(author: Discord.User, participants: Array<Discord.User>, msgOrigin: Discord.Message, round: number, locale: string){
         this._id = this.generateId();
         this._author = author;
         this._msgOrigin = msgOrigin;
@@ -32,6 +38,7 @@ export abstract class Game implements IGame {
         this._round = round;
         this._story = new Discord.Collection<StoryMessage, Discord.User>();
         this._done = false;
+        this._locale = locale;
         Game.activeGames.push(this);
     }
 
@@ -54,6 +61,10 @@ export abstract class Game implements IGame {
 
         return code;
     }    
+
+    translate(phrase: string, args?: any): string{
+        return this.localeService.translate({phrase: phrase, locale: this.locale}, args);
+    }
 
     stop() {
         const gameIndex = Game.activeGames.findIndex(game => game.id == this.id);
@@ -114,6 +125,10 @@ export abstract class Game implements IGame {
         return this._story;
     }
     
+    get locale() {
+        return this._locale;
+    }
+    
     get done() {
         return this._done;
     }
@@ -121,5 +136,4 @@ export abstract class Game implements IGame {
     set done(value: boolean){
         this._done = value;
     }
-
 }

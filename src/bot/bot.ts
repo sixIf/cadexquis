@@ -3,6 +3,8 @@ import { defaultCooldown, DiscordCommand } from "../config/literals/discordComma
 import { Game } from "../classes/game";
 import { logger } from "../utils/logger";
 import commands from "../utils/commands";
+import { ApplicationContainer } from "../di";
+import { LocaleService } from "../services/localeService";
 
 
 export class Bot {
@@ -12,6 +14,7 @@ export class Bot {
     static commands = commands;
     static logger = logger;
     cooldowns: Discord.Collection<string, Discord.Collection<string, number>> = new Discord.Collection();
+    localeService = ApplicationContainer.resolve(LocaleService);
 
     constructor(prefix: string, token: string){
         this.client = new Discord.Client();
@@ -59,17 +62,16 @@ export class Bot {
             
             // Verify required arguments
             if (command.args && !args.length) {
-                let reply = `You didn't provide any arguments, ${msg.author}`;
+                let reply = this.localeService.translate("command.argMissing", {author: msg.author});
         
                 if(command.usage) {
-                    reply += `\nThe proper usage would be: \`${this.prefix}${command.name} ${command.usage}\``;
+                    reply += this.localeService.translate("command.correctUsage", {usage: `${this.prefix}${command.name} ${command.usage}`});
                 }
-        
                 return msg.channel.send(reply);
             }
         
             if (command.guildOnly && msg.channel.type === 'dm') {
-                return msg.reply('I can\'t execute that command inside DMs!');
+                return msg.reply(this.localeService.translate("command.dmForbidden"));
             }
         
             // Handle Cooldowns 
@@ -86,7 +88,7 @@ export class Bot {
         
                 if (now < expirationTime) {
                     const timeLeft = (expirationTime - now) / 1000;
-                    return msg.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
+                    return msg.reply(this.localeService.translate("command.waitCooldown", {time: timeLeft.toFixed(1), name: command.name}));
                 }        
             } else {
                 timestamps.set(msg.author.id, now);
@@ -109,7 +111,7 @@ export class Bot {
                     message: `Error trying to execute ${commandName}`,  
 
                 });
-                msg.reply('There was an error trying to execute that command!');
+                msg.reply(this.localeService.translate("command.error"));
             }    
         })
     }

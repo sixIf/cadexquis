@@ -1,28 +1,29 @@
 import { Game, StoryMessage } from "./game"
 import Discord from "discord.js"
 import { sendStoryWaitTime, visibleWords } from "../config/literals/discordCommand"
-import { created, lastEntry } from "../config/tips.json"
 import { spoiler, prefix } from "../config/config.json"
 import { Bot } from "../bot/bot"
 
 
 export class CadavreExquis extends Game {
-    constructor(author: Discord.User, participants: Array<Discord.User>, msgOrigin: Discord.Message, round: number){
-        super(author, participants, msgOrigin, round);
+    constructor(author: Discord.User, participants: Array<Discord.User>, msgOrigin: Discord.Message, round: number, locale = 'en'){
+        super(author, participants, msgOrigin, round, locale);
         Game.activeGames.push(this);
     }
-    
+
     start(): void {
         this.askToPlay(this.participants[0]);
     }
 
     askToPlay(user: Discord.User, storyMsg?: StoryMessage): void { 
-        let botMsg = ''.concat('\n', this.story.size > 0 ? `Here is how ${storyMsg.msg.author} ended his part: **${storyMsg.hint}**` : created,
-                                '\n\n', `Your phrase will be sent to the next participant with only the last ${visibleWords} word visible.`,
-                                '\n\n', `\`Pro tip: you can choose what to hide by putting the text this way:\n||This story is hidden|| and this part is not\``,
-                                this.remainingMsgNb == 1 ? `\n**` + lastEntry +'**': '');
+        let botMsg = ''.concat('\n', this.story.size > 0 ? 
+                                            this.translate("Hint", {author: storyMsg.msg.author.tag, hint: storyMsg.hint}) : 
+                                            this.translate("Created"),
+                                '\n\n', this.translate("Play-tip"),
+                                '\n\n', this.translate("Tip visible word"),
+                                this.remainingMsgNb == 1 ? `\n**` + this.translate("Info last round") +'**': '');
 
-        const embedMsg = Bot.embedMsg.setTitle('It\'s your turn !')
+        const embedMsg = Bot.embedMsg.setTitle(this.translate("Your turn"))
             .setDescription(botMsg);
         user.createDM()
             .then((channel: Discord.DMChannel) => {
@@ -31,7 +32,7 @@ export class CadavreExquis extends Game {
                     const msgIsTooShort = response.content.trim().split(' ').length < (visibleWords);
                     if(!msgIsValid) return false;
                     else if (msgIsTooShort) {
-                        response.reply(`Don\'t be so shy, write a least ${visibleWords} words.`)
+                        response.reply(this.translate("Not enough words"))
                         return false;
                     } 
                     else return true;
@@ -45,7 +46,7 @@ export class CadavreExquis extends Game {
                         })
                         .catch(collected => {
                             if(!this.done) {
-                                channel.send('You are sleeping, we skipped your turn !');
+                                channel.send(this.translate("Skip"));
                                 this.skip();
                             };
                         })
@@ -53,7 +54,7 @@ export class CadavreExquis extends Game {
             })
             .catch((err: Error) => {
                 console.error(err);
-                this.msgOrigin.channel.send(`Couldn\'t send a DM to ${user}, we skip your turn.`)
+                this.msgOrigin.channel.send(this.translate("DM error", {user: user.tag}))
                 this.skip();
             });
     }  
@@ -80,7 +81,8 @@ export class CadavreExquis extends Game {
         if (this.remainingMsgNb == 0) return this.stop();
         else {
             const nextParticipant = this.getNextParticipant();
-            msg.reply(`Here is the hint ${nextParticipant.username} will receive: ${this.story.lastKey().hint}`);            
+            msg.reply(this.translate("Next user will receive", 
+                                        {nextUser: nextParticipant.username, hint: this.story.lastKey().hint}));            
             this.askToPlay(nextParticipant, this.story.lastKey());
         }
     }
@@ -106,9 +108,9 @@ export class CadavreExquis extends Game {
         const reduceStory = (story: string, user: Discord.User, storyMsg: StoryMessage ) => `${story + '\n' + storyMsg.msg.content}`;
         const formattedStory = this.story.reduce(reduceStory, '');
         if (formattedStory.length > 0){
-            const embedMsg = Bot.embedMsg.setTitle('Here is your masterpiece')
+            const embedMsg = Bot.embedMsg.setTitle(this.translate("Masterpiece"))
                 .setDescription(formattedStory)
-                .addField('Players', this.participants.reduce(reduceParticipants, ''));
+                .addField(this.translate('Players'), this.participants.reduce(reduceParticipants, ''));
             this.msgOrigin.channel.send(embedMsg);
         }
     }
@@ -129,4 +131,6 @@ export class CadavreExquis extends Game {
         }
         return arr.join('');
     }
+
+
 }

@@ -1,3 +1,4 @@
+import "reflect-metadata"
 import { Bot } from "./bot/bot";
 import { prefix, token } from "./config/config.json"
 import { logger } from "./utils/logger";

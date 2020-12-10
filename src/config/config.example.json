@@ -1,5 +1,7 @@
 {
     "prefix": "?",
     "token": "your-token-goes-here",
-    "spoiler": "||"
+    "spoiler": "||",
+    "joinEmoji": "💩",
+    "startEmoji": "🎬"    
 }
