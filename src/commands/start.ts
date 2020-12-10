@@ -1,5 +1,5 @@
 import Discord, { User } from "discord.js"
-import { startEmoji, joinEmoji } from "../config/tips.json"
+import { startEmoji, joinEmoji } from "../config/config.json"
 import { CadavreExquis } from "../classes/cadavreExquis"
 import { Game } from "../classes/game";
 import { Bot } from "../bot/bot";
