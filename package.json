@@ -20,10 +20,12 @@
   "homepage": "https://github.com/groCervo/cadexquis#readme",
   "dependencies": {
     "@types/i18n": "^0.12.0",
+    "@types/nedb": "^1.8.11",
     "@types/winston": "^2.4.4",
     "cross-env": "^7.0.2",
     "discord.js": "^12.5.1",
     "i18n": "^0.13.2",
+    "nedb": "^1.8.0",
     "reflect-metadata": "^0.1.13",
     "tsyringe": "^4.4.0",
     "winston": "^3.3.3"

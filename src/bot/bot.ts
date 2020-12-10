@@ -1,10 +1,11 @@
 import Discord from "discord.js"
 import { defaultCooldown, DiscordCommand } from "../config/literals/discordCommand";
 import { Game } from "../classes/game";
-import { logger } from "../utils/logger";
 import commands from "../utils/commands";
 import { ApplicationContainer } from "../di";
 import { LocaleService } from "../services/localeService";
+import { LoggerService } from "../services/loggerService";
+import { DbClient } from "../api/dbClient";
 
 
 export class Bot {
@@ -12,9 +13,10 @@ export class Bot {
     prefix: string;
     token: string;
     static commands = commands;
-    static logger = logger;
+    logger = ApplicationContainer.resolve(LoggerService);;
     cooldowns: Discord.Collection<string, Discord.Collection<string, number>> = new Discord.Collection();
     localeService = ApplicationContainer.resolve(LocaleService);
+    dbService = ApplicationContainer.resolve(DbClient)
 
     constructor(prefix: string, token: string){
         this.client = new Discord.Client();
@@ -34,17 +36,20 @@ export class Bot {
         .setThumbnail('https://upload.wikimedia.org/wikipedia/commons/8/85/Exquisite_Corpses_example.jpg');
     }
 
-    private _init() {
-        this._onClientReady();
-        this._onClientMessage();
+    private async _init() {
+        try {
+            await this.dbService.connect();
+            this._onClientReady();
+            this._onClientMessage();
+
+        } catch (err) {
+            this.logger.logError(err);
+        }
     }
 
     private _onClientReady() {
         this.client.on('ready', () => {
-            logger.log({
-                level: 'info',
-                message: `Logged in as ${this.client.user.tag}`
-            });
+            this.logger.logInfo(`Logged in as ${this.client.user.tag}`);
         })
     }
 
@@ -106,11 +111,7 @@ export class Bot {
             try {
                 command.execute(msg, args);
             } catch (error) {
-                logger.log({
-                    level: 'error',
-                    message: `Error trying to execute ${commandName}`,  
-
-                });
+                this.logger.logError(`Error trying to execute ${commandName}`);
                 msg.reply(this.localeService.translate("command.error"));
             }    
         })
