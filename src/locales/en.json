@@ -1,0 +1,49 @@
+{
+	"command": {
+		"argMissing": "You didn't provide any arguments, {{author}}",
+		"correctUsage": "The proper usage would be: `{{usage}}`",
+		"dmForbidden": "I can't execute that command inside DMs!",
+		"waitCooldown": "please wait {{time}} more second(s) before reusing the `{{name}}` command.",
+		"error": "There was an error trying to execute that command !"
+	},
+	"help": {
+        "shortDescription": "List all of my commands or info about a specific command.",
+		"description": "The exquisite corpse (Cadavre exquis) is a game where you write a little story in collaboration, but without knowing what your friends wrote !\nTo start a game just send `?start`",
+		"listCmds": "Here's a list of all my commands:",
+		"cmds": "Commands",
+		"cmdNotValid": "that's not a valid command!",
+		"cmdName": "**Name:** {{name}}",
+		"cmdAliases": "**Aliases:** {{aliases}}",
+		"cmdDescription": "**Description:** {{description}}",
+		"cmdUsage": "**Usage:** `{{usage}}`",
+		"cmdCooldown": "**Cooldown:** {{cooldown}} second(s)",
+		"detailledHelp": "\nYou can send `{{prefix}}help [command name]` to get info on a specific command!"
+	},
+	"start": {
+		"shortDescription": "Create a game. By default the game plays in {{defaultRound}} rounds.",
+		"title": "Let's play",
+		"joinInstruction": "Join the game by reacting {{joinEmoji}}\n{{creator}} you can launch the game by reacting {{startEmoji}}",
+		"notEnoughPlayers": "You can't play alone, go get some friends first.",
+		"gameBegin": "So the game begins",
+		"areIn": "are in.",
+		"rejectCreation": "You already have an active game {{creator}}",
+		"explainWhoGotRejected": "If you are not in, that mean you are currently in an active game",
+		"notifyWhoFirst": "you go first, check your DMs"
+	},
+    "stop": {
+        "shortDescription": "Stop the game.",
+        "onlyCreator": "Only {{creator}} is powerful enough to stop the game."
+    },
+	"Play-tip": "Your phrase will be sent to the next participant with only the last {{visibleWords}} words visible.",
+	"Created": "You are sleeping, we skipped your turn !",
+	"Skip": "You are sleeping, we skipped your turn !",
+	"DM error": "Couldn't send a DM to {{user}}, we skip your turn.",
+	"Hint": "Here is how {{author}} ended his part: **{{hint}}**",
+	"Tip visible word": "`Pro tip: you can choose what to hide by putting the text this way:\n||This story is hidden|| and this part is not`",
+	"Info last round": "Final step, you will conclude this masterpiece !",
+	"Your turn": "It's your turn !",
+	"Not enough words": "Don't be so shy, write a least {{visibleWords}} words.",
+	"Next user will receive": "Here is the hint {{nextUser}} will receive: {{hint}}",
+	"Here is your masterpiece": "Here is your masterpiece",
+	"Players": "Players"
+}

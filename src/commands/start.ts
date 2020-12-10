@@ -4,10 +4,14 @@ import { CadavreExquis } from "../classes/cadavreExquis"
 import { Game } from "../classes/game";
 import { Bot } from "../bot/bot";
 import { defaultRound, joinWaitTime } from "../config/literals/discordCommand";
+import { ApplicationContainer } from "../di";
+import { LocaleService } from "../services/localeService";
+
+const localeService = ApplicationContainer.resolve(LocaleService);
 
 module.exports = {
 	name: 'start',
-	description: `Create a game. By default the game plays in ${defaultRound} rounds.`,
+	description: localeService.translate("start.shortDescription", {defaultRound: defaultRound}),
     args: false,
     usage: '[roundNb]',
 	guildOnly: true,
@@ -15,10 +19,10 @@ module.exports = {
 	execute(msg: Discord.Message, args: Array<string>) {
         const roundNb = parseInt(args[1]) || defaultRound;
         const waitTime = process.env.NODE_ENV == 'development' ? 10000 : joinWaitTime;
-        const embedMsg = Bot.embedMsg.setTitle('Let\'s play !')
-            .setDescription(`Join the game by reacting ${joinEmoji}`.concat('\n', `${msg.author} you can launch the game by reacting ${startEmoji}`));
+        const embedMsg = Bot.embedMsg.setTitle(localeService.translate("start.title"))
+            .setDescription(localeService.translate("start.joinInstruction", {joinEmoji: joinEmoji, startEmoji: startEmoji, author: msg.author}));
 
-        if (Game.isUserInActiveGames(msg.author.id)) return msg.reply(`You already have an active game ${msg.author}`);
+        if (Game.isUserInActiveGames(msg.author.id)) return msg.reply(localeService.translate("start.rejectCreation", {creator: msg.author}));
 
 
         msg.channel.send(embedMsg).then((botMsg) => {
@@ -59,13 +63,13 @@ module.exports = {
 
         function startGame(participants: Discord.Collection<string, Discord.User>, startMsg: Discord.Message){
             const allowedParticipants = participants.mapValues(user => user).filter((user) => !Game.isUserInActiveGames(user.id));
-            if(allowedParticipants.size < 2) return startMsg.reply(`You can't play alone, go get some friends first.`);
+            if(allowedParticipants.size < 2) return startMsg.reply(localeService.translate("start.notEnoughPlayers"));
             const game = new CadavreExquis(startMsg.author, [...allowedParticipants.values()], startMsg, roundNb);
-            const startedMsg = Bot.embedMsg.setTitle('So the game begins')
+            const startedMsg = Bot.embedMsg.setTitle(localeService.translate("start.gameBegin"))
             .setDescription(game.participantsName.concat(' ', 
-            'are in.', 
-            participants.size != allowedParticipants.size ? 'If you are not in, that mean you are currently in an active game' : '',
-            '\n', `${game.participants[0]} you go first, check your DMs`)
+            localeService.translate("start.areIn"), 
+            participants.size != allowedParticipants.size ? localeService.translate("start.explainWhoGotRejected") : '',
+            '\n', `${game.participants[0]} ${localeService.translate("start.notifyWhoFirst")}`)
             );
             startMsg.channel.send(startedMsg);
             game.start();

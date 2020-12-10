@@ -6,7 +6,9 @@
       "moduleResolution": "node",
       "resolveJsonModule": true,
       "sourceMap": true,
-      "outDir": "dist"
+      "outDir": "dist",
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true
   },
   "types": [
       "discord"

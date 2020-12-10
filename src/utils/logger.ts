@@ -13,11 +13,11 @@ export const logger = createLogger({
     defaultMeta: { service: 'cadavre-exquis' },
     transports: [
       //
-      // - Write to all logs with level `info` and below to `quick-start-combined.log`.
-      // - Write all logs error (and below) to `quick-start-error.log`.
+      // - Write to all logs with level `info` and below to `bot-combined.log`.
+      // - Write all logs error (and below) to `bot-error.log`.
       //
-      new transports.File({ filename: 'quick-start-error.log', level: 'error' }),
-      new transports.File({ filename: 'quick-start-combined.log' })
+      new transports.File({ filename: 'bot-error.log', level: 'error' }),
+      new transports.File({ filename: 'bot-combined.log' })
     ]
 });
 

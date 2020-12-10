@@ -2,28 +2,31 @@ import { prefix } from "../config/config.json"
 import Discord from "discord.js"
 import { defaultCooldown } from "../config/literals/discordCommand";
 import { Bot } from "../bot/bot";
-import { description } from "../config/tips.json"
+import { ApplicationContainer } from "../di";
+import { LocaleService } from "../services/localeService";
+
+const localeService = ApplicationContainer.resolve(LocaleService);
 
 module.exports = {
     name: 'help',
-	description: 'List all of my commands or info about a specific command.',
-	aliases: ['commands'],
+	description: localeService.translate("help.shortDescription"),
+	aliases: ['aide'],
 	usage: '[command name]',
 	cooldown: 2,
-	execute(msg: Discord.Message, args: Array<string>) {
+	execute(msg: Discord.Message, args: Array<string>) {       
 		const data = [];
 
         const commands = Bot.commands;
         const embedMsg = Bot.embedMsg.setTitle('Cadavre exquis')
             .setURL('http://cadexquis.site/')
-            .setDescription(description);
+            .setDescription(localeService.translate("help.description"));
 
         if (!args.length) {
-            data.push('Here\'s a list of all my commands:');
+            data.push(localeService.translate("help.listCmds"));
             data.push(commands.map(command => command.name).join(', '));
-            data.push(`\nYou can send \`${prefix}help [command name]\` to get info on a specific command!`);
+            data.push(localeService.translate("help.detailledHelp", {prefix: prefix}));
             
-            embedMsg.addField('Commands', data.join('\n'))
+            embedMsg.addField(localeService.translate('help.cmds'), data.join('\n'))
             return msg.channel.send(embedMsg);       
         }
         else {
@@ -31,18 +34,18 @@ module.exports = {
             const command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));
             
             if (!command) {
-                return msg.reply('that\'s not a valid command!');
+                return msg.reply(localeService.translate('help.cmdNotValid'));
             }
             
-            data.push(`**Name:** ${command.name}`);
+            data.push(localeService.translate("help.cmdName", {name: command.name}));
             
-            if (command.aliases) data.push(`**Aliases:** ${command.aliases.join(', ')}`);
-            if (command.description) data.push(`**Description:** ${command.description}`);
-            if (command.usage) data.push(`**Usage:** \`${prefix}${command.name} ${command.usage}\``);
+            if (command.aliases) data.push(localeService.translate("help.cmdAliases", {aliases: command.aliases.join(', ')}));
+            if (command.description) data.push(localeService.translate("help.cmdDescription", {description: command.description}));
+            if (command.usage) data.push(localeService.translate("help.cmdUsage", {usage: `${prefix}${command.name} ${command.usage}`}));
             
-            data.push(`**Cooldown:** ${command.cooldown || defaultCooldown} second(s)`);
+            data.push(localeService.translate("help.cmdCooldown", {cooldown: `${command.cooldown || defaultCooldown}`}));
             
-            embedMsg.addField('Commands', data.join('\n'))
+            embedMsg.addField(localeService.translate('help.cmds'), data.join('\n'))
             return msg.channel.send(embedMsg); 
         }
 	},
