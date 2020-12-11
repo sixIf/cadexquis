@@ -1,18 +1,17 @@
 import { injectable } from "tsyringe";
-import i18n from '../utils/i18n'
+import i18n, { locales } from '../utils/i18n'
 
 export interface ILocaleService {
   getCurrentLocale(): string;
   getLocales(): Array<string>;
   setLocale(locale: string): void;
-  translate(phrase: string|phraseInfo, args?: any): string;
-  translatePlurals(phrase: string|phraseInfo, count: number): string;
+  translate(phrase: string, locale: locales, args?: any): string;
 }
 
-interface phraseInfo {
-  locale: string;
-  phrase: string;
-}
+// interface phraseInfo {
+//   locale: string;
+//   phrase: string;
+// }
 
 /**
  * LocaleService
@@ -50,20 +49,13 @@ export class LocaleService implements ILocaleService {
     }
     /**
      *
-     * @param string String to translate
+     * @param phrase String to translate
+     * @param locale Targeted language
      * @param args Extra parameters
      * @returns {string} Translated string
      */
-    translate(phrase: string|phraseInfo, args = undefined): string {
-      return this.i18nProvider.__(phrase, args)
-    }
-    /**
-     *
-     * @param phrase Object to translate
-     * @param count The plural number
-     * @returns {string} Translated string
-     */
-    translatePlurals(phrase: string, count: number): string {
-      return this.i18nProvider.__n(phrase, count)
+    translate(phrase: string, locale: locales, args = undefined): string {
+      console.log(`phrase: ${phrase} et locale ${locale}`)
+      return this.i18nProvider.__({phrase: phrase, locale: locale}, args)
     }
   }

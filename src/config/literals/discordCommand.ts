@@ -1,4 +1,5 @@
 import Discord from "discord.js"
+import { locales } from "../../utils/i18n";
 
 export interface DiscordCommand extends NodeModule {
     name: string;
@@ -9,7 +10,8 @@ export interface DiscordCommand extends NodeModule {
     guildOnly?: string;
     cooldown: number;
     description: string;
-    execute(msg: Discord.Message, args: Array<any>): void;
+    descriptionArgs: any;
+    execute(msg: Discord.Message, args: Array<any>, locale: locales): void;
 }
 
 export const defaultCooldown = 3;

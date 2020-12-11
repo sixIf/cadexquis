@@ -26,9 +26,6 @@
 		"cmdCooldown": "**Cooldown:** {{cooldown}} second(s)",
 		"detailledHelp": "\nYou can send `{{prefix}}help [command name]` to get info on a specific command!"
 	},
-	"skip": {
-		"shortDescription": "Skip sleeping player's turn."
-	},
 	"start": {
 		"shortDescription": "Create a game. By default the game plays in {{defaultRound}} rounds.",
 		"title": "Let's play",

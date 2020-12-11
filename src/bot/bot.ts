@@ -5,7 +5,8 @@ import commands from "../utils/commands";
 import { ApplicationContainer } from "../di";
 import { LocaleService } from "../services/localeService";
 import { LoggerService } from "../services/loggerService";
-import { DbClient } from "../api/dbClient";
+import { DbService } from "../services/dbService";
+import { locales } from "../utils/i18n";
 
 
 export class Bot {
@@ -16,7 +17,7 @@ export class Bot {
     logger = ApplicationContainer.resolve(LoggerService);;
     cooldowns: Discord.Collection<string, Discord.Collection<string, number>> = new Discord.Collection();
     localeService = ApplicationContainer.resolve(LocaleService);
-    dbService = ApplicationContainer.resolve(DbClient)
+    dbService = ApplicationContainer.resolve(DbService)
 
     constructor(prefix: string, token: string){
         this.client = new Discord.Client();
@@ -54,8 +55,17 @@ export class Bot {
     }
 
     private _onClientMessage() {
-        this.client.on('message', msg => {
+        this.client.on('message', async msg => {
             if(!msg.content.startsWith(this.prefix) || msg.author.bot) return;
+
+            let currentLocale: locales = "en";
+
+            try {
+                const channel = await this.dbService.getChannel(msg.channel.id);
+                currentLocale = channel.lang;
+            } catch (err) {
+                this.logger.logError(err);
+            }
             
             const args = msg.content.slice(this.prefix.length).trim().split(/ +/);
             const commandName = args.shift().toLowerCase();
@@ -67,16 +77,16 @@ export class Bot {
             
             // Verify required arguments
             if (command.args && !args.length) {
-                let reply = this.localeService.translate("command.argMissing", {author: msg.author});
+                let reply = this.localeService.translate("command.argMissing", currentLocale, {author: msg.author});
         
                 if(command.usage) {
-                    reply += this.localeService.translate("command.correctUsage", {usage: `${this.prefix}${command.name} ${command.usage}`});
+                    reply += this.localeService.translate("command.correctUsage", currentLocale, {usage: `${this.prefix}${command.name} ${command.usage}`});
                 }
                 return msg.channel.send(reply);
             }
         
             if (command.guildOnly && msg.channel.type === 'dm') {
-                return msg.reply(this.localeService.translate("command.dmForbidden"));
+                return msg.reply(this.localeService.translate("command.dmForbidden", currentLocale));
             }
         
             // Handle Cooldowns 
@@ -93,7 +103,7 @@ export class Bot {
         
                 if (now < expirationTime) {
                     const timeLeft = (expirationTime - now) / 1000;
-                    return msg.reply(this.localeService.translate("command.waitCooldown", {time: timeLeft.toFixed(1), name: command.name}));
+                    return msg.reply(this.localeService.translate("command.waitCooldown", currentLocale, {time: timeLeft.toFixed(1), name: command.name}));
                 }        
             } else {
                 timestamps.set(msg.author.id, now);
@@ -109,10 +119,10 @@ export class Bot {
             }
         
             try {
-                command.execute(msg, args);
+                command.execute(msg, args, currentLocale);
             } catch (error) {
                 this.logger.logError(`Error trying to execute ${commandName}`);
-                msg.reply(this.localeService.translate("command.error"));
+                msg.reply(this.localeService.translate("command.error", currentLocale));
             }    
         })
     }

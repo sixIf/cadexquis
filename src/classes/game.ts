@@ -1,6 +1,7 @@
 import Discord from "discord.js"
 import { ApplicationContainer } from "../di";
 import { LocaleService } from "../services/localeService";
+import { locales } from "../utils/i18n";
 import { logger } from "../utils/logger";
 
 export interface IGame {
@@ -27,10 +28,10 @@ export abstract class Game implements IGame {
     private _story: Discord.Collection<StoryMessage, Discord.User>;
     static activeGames: Array<Game> = [];
     private _done: boolean;
-    private _locale: string;
+    private _locale: locales;
     localeService = ApplicationContainer.resolve(LocaleService);
 
-    constructor(author: Discord.User, participants: Array<Discord.User>, msgOrigin: Discord.Message, round: number, locale: string){
+    constructor(author: Discord.User, participants: Array<Discord.User>, msgOrigin: Discord.Message, round: number, locale: locales){
         this._id = this.generateId();
         this._author = author;
         this._msgOrigin = msgOrigin;
@@ -63,7 +64,7 @@ export abstract class Game implements IGame {
     }    
 
     translate(phrase: string, args?: any): string{
-        return this.localeService.translate({phrase: phrase, locale: this.locale}, args);
+        return this.localeService.translate(phrase, this.locale, args);
     }
 
     stop() {

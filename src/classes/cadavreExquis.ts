@@ -3,10 +3,11 @@ import Discord from "discord.js"
 import { sendStoryWaitTime, visibleWords } from "../config/literals/discordCommand"
 import { spoiler, prefix } from "../config/config.json"
 import { Bot } from "../bot/bot"
+import { locales } from "../utils/i18n"
 
 
 export class CadavreExquis extends Game {
-    constructor(author: Discord.User, participants: Array<Discord.User>, msgOrigin: Discord.Message, round: number, locale = 'en'){
+    constructor(author: Discord.User, participants: Array<Discord.User>, msgOrigin: Discord.Message, round: number, locale: locales = 'en'){
         super(author, participants, msgOrigin, round, locale);
         Game.activeGames.push(this);
     }

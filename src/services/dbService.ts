@@ -1,34 +1,35 @@
 import { inject, injectable } from "tsyringe";
 import { IDbClient } from "../api/dbClient";
+import { ChannelInfo } from "../config/literals/channelInfos";
 
 export interface IDbService {
-    connect(): Promise<any>;
-    setChannel(channelID: string, guildID: string, options: any): Promise<any>;
-    getChannel(channelID: string): Promise<any>;
-    removeGuildChannels(guildID: string): Promise<any>;
+    connect(): Promise<boolean>;
+    setChannel(channel: ChannelInfo): Promise<ChannelInfo>;
+    getChannel(channel: string): Promise<ChannelInfo>;
+    removeGuildChannels(guildID: string): Promise<boolean>;
 }
 
 @injectable()
 export class DbService implements IDbService {
     constructor(@inject("IDbClient") private dbClient: IDbClient) { }
-    connect(): Promise<any> {
+    connect(): Promise<boolean> {
         const response = this.dbClient.connect();
         return response;
     }
 
-    setChannel(channelID: string, guildID: string, options: any): Promise<any> {
-        this.dbClient.setChannel(channelID, guildID, options);
-        throw new Error("Method not implemented.");
+    setChannel(channel: ChannelInfo): Promise<ChannelInfo> {
+        const response = this.dbClient.setChannel(channel);
+        return response;
     }
     
-    getChannel(channelID: string): Promise<any> {
-        this.dbClient.getChannel(channelID);
-        throw new Error("Method not implemented.");
+    getChannel(channelID: string): Promise<ChannelInfo> {
+        const response =  this.dbClient.getChannel(channelID);
+        return response;
     }
     
-    removeGuildChannels(guildID: string): Promise<any> {
-        this.dbClient.removeGuildChannels(guildID);
-        throw new Error("Method not implemented.");
+    removeGuildChannels(guildID: string): Promise<boolean> {
+        const response =  this.dbClient.removeGuildChannels(guildID);
+        return response;
     }
 
 }
